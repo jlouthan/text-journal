@@ -3,10 +3,19 @@ import twilio.twiml
 
 app = Flask(__name__)
 
-@app.route("/", methods=['GET', 'POST'])
-def hello_monkey():
+thing_list = ['one thing', 'a second thing']
+
+@app.route("/", methods=['GET'])
+def show_things():
+	return str(thing_list)
+
+@app.route('/', methods=['POST'])
+def receive_text():
 	response = twilio.twiml.Response()
-	response.message('Hello...')
+	new_thing = request.values.get('Body', None)
+	print new_thing
+	thing_list.append(new_thing)
+	response.message('Thing received: ' + new_thing)
 	return str(response)
 
 @app.route('/hello', methods=['GET'])
