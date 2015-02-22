@@ -1,0 +1,26 @@
+#!/bin/bash
+
+NAME="textJournal"
+FLASKDIR=/Users/jenniferlouthan/Projects/TextJournal/app
+VENVDIR=/Users/jenniferlouthan/Projects/TextJournal/env
+SOCKFILE=/Users/jenniferlouthan/Projects/TextJournal/sock
+NUM_WORKERS=3
+
+echo "Starting $NAME"
+
+# activate the virtualenv
+cd $VENVDIR
+source bin/activate
+
+export PYTHONPATH=$FLASKDIR:$PYTHONPATH
+
+# Create the run directory if it doesn't exist
+RUNDIR=$(dirname $SOCKFILE)
+test -d $RUNDIR || mkdir -p $RUNDIR
+
+# Start your unicorn
+exec gunicorn run:app -b 127.0.0.1:4242 \
+  --name $NAME \
+  --workers $NUM_WORKERS \
+  --log-level=debug \
+  --bind=unix:$SOCKFILE
